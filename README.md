@@ -138,19 +138,23 @@ than claiming success.
 **Guardrails on every workflow.** `--max-turns`, a job `timeout-minutes`, a `concurrency`
 group so a comment storm cannot fan out, and `[skip-crew]` in a title to opt out.
 
-## Agents
+## The crew
 
-Each is a subagent you can also call by hand in your editor —
+Six agents. Each signs what it posts, so you can tell who said what when several of them
+land on one pull request. Each is also a subagent you can call by hand in your editor —
 `basivo-crew:reviewer`, `basivo-crew:triage`, and so on.
 
-| Agent | Writes code | For |
-| :- | :- | :- |
-| `triage` | no | issue → ordered action items that name files |
-| `architect` | no | the approach, the blast radius, the pattern to follow |
-| `developer` | yes | the minimal diff, and the project's own checks, run for real |
-| `tester` | yes | the test that fails if the change regresses; the suite |
-| `reviewer` | no | defects with a traced failure path, blocking vs optional |
-| `security` | no | untrusted input to sink, authz, secrets, supply chain |
+| | Handle | Writes code | For |
+| :- | :- | :- | :- |
+| **Scout** | `triage` | no | issue → acceptance criteria and action items that name files |
+| **Compass** | `architect` | no | the approach, the blast radius, the pattern to follow |
+| **Forge** | `developer` | yes | the minimal diff, and the project's own checks, run for real |
+| **Proof** | `tester` | yes | the test that fails if the change regresses; the suite |
+| **Lens** | `reviewer` | no | scored defects with a traced failure path |
+| **Shield** | `security` | no | untrusted input to sink, authz, secrets, supply chain |
+
+The names are bylines, not personas — the handle you type stays the role, so nobody has
+to learn a mapping to use the plugin.
 
 ## Cost
 
