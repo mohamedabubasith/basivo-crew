@@ -1,0 +1,53 @@
+# Basivo Crew — Pro tier, review.
+# Every pull request gets a correctness pass and a security pass, posted as inline comments.
+name: Crew review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+concurrency:
+  group: crew-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: |
+      github.event.pull_request.draft == false &&
+      !contains(github.event.pull_request.title, '[skip-crew]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: https://github.com/mohamedabubasith/basivo-plugins.git
+          plugins: basivo-crew@basivo
+          use_sticky_comment: true
+          claude_args: --max-turns 40
+          prompt: |
+            Review pull request #${{ github.event.pull_request.number }} in ${{ github.repository }}.
+
+            Delegate to both, giving each the diff against the base branch:
+            - `basivo-crew:reviewer` for correctness
+            - `basivo-crew:security` for the trust boundaries the diff touches
+
+            Post one review. Put the reviewer's blocking findings and the security findings
+            as inline comments on their lines, and the two verdicts in the review body.
+            Drop a finding only if the other agent already reported the same defect on the
+            same line.
+
+            Request changes only if there is at least one blocking or at least one
+            high-or-critical security finding. Otherwise comment, or approve in one line
+            when both come back clean.
+
+            Post nothing else: no diff summary, no praise, no plan.

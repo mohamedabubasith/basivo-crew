@@ -1,0 +1,61 @@
+# Basivo Crew — Pro tier, follow-up.
+# `@claude` on a pull request (comment or review comment) -> developer addresses the
+# feedback on that same branch, tester re-runs the suite.
+name: Crew follow-up
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+concurrency:
+  group: crew-followup-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  followup:
+    if: |
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
+       contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' &&
+       contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' &&
+       contains(github.event.review.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: https://github.com/mohamedabubasith/basivo-plugins.git
+          plugins: basivo-crew@basivo
+          track_progress: true
+          claude_args: --max-turns 60
+          prompt: |
+            Someone asked for a change on a pull request in ${{ github.repository }}, in the
+            comment that triggered this run.
+
+            1. Read the request and the existing diff. Work out exactly what is being asked.
+            2. Delegate to `basivo-crew:developer` to make that change on this branch, and to
+               run this project's lint, build and test commands.
+            3. Delegate to `basivo-crew:tester` to re-run the suite and cover anything new.
+            4. Push to the same branch and reply once on the thread: what you changed, and
+               the tester's verdict.
+
+            Only what was asked. If the request is ambiguous, implement the reading you can
+            defend and say which reading you took in the reply. If it asks for something you
+            should not do — weaken a test, commit a secret, rewrite unrelated code — say why
+            not instead of doing it.

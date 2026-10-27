@@ -1,0 +1,14 @@
+{
+  "name": "basivo-crew",
+  "displayName": "Basivo Crew",
+  "version": "0.1.0",
+  "description": "Turn issues into reviewed pull requests. A crew of agents — triage, architect, developer, tester, reviewer, security — that runs in your CI on every trigger, in two tiers.",
+  "author": {
+    "name": "Mohamed Abu Basith",
+    "url": "https://basivo.in"
+  },
+  "homepage": "https://github.com/mohamedabubasith/basivo-crew",
+  "repository": "https://github.com/mohamedabubasith/basivo-crew",
+  "license": "MIT",
+  "keywords": ["ci", "code-review", "github-actions", "gitlab", "agents", "automation"]
+}

@@ -1,0 +1,62 @@
+# Basivo Crew — Pro tier, build.
+# Issue labelled `crew:build` -> architect picks the approach, developer writes it,
+# tester gates it, reviewer checks it, a pull request opens.
+name: Crew build
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: crew-build-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event.label.name == 'crew:build'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: https://github.com/mohamedabubasith/basivo-plugins.git
+          plugins: basivo-crew@basivo
+          track_progress: true
+          claude_args: --max-turns 80
+          prompt: |
+            Issue #${{ github.event.issue.number }} in ${{ github.repository }} is the work order.
+
+            Title: ${{ github.event.issue.title }}
+
+            Run the Pro crew, in order, passing each agent's output to the next:
+
+            1. `basivo-crew:triage` — unless a triage comment already exists on the issue, in
+               which case use that one and skip this step.
+            2. `basivo-crew:architect` — the approach, from those action items.
+            3. `basivo-crew:developer` — implement that approach and run this project's own
+               lint, build and test commands.
+            4. `basivo-crew:tester` — write the missing tests and run the suite.
+            5. `basivo-crew:reviewer` — review the diff.
+
+            If the tester returns FAIL or the reviewer returns blocking findings, hand them
+            back to `basivo-crew:developer` and repeat steps 3 to 5. At most two rounds.
+
+            Then commit to a new branch and open a pull request whose body has: the approach
+            in two lines, what changed, the tester's verdict with the tests added, the
+            reviewer's verdict, and `Closes #${{ github.event.issue.number }}`.
+
+            If the suite is still red after two rounds, open the pull request as a draft and
+            say plainly at the top of the body what is failing and what you tried. Never
+            weaken, skip or delete a check to reach green, and never report a check as
+            passing unless you ran it and saw it pass.

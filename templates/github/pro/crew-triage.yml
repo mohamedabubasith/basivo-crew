@@ -1,0 +1,47 @@
+# Basivo Crew — Pro tier, triage.
+# New issue -> triage agent grounds it in the codebase and posts an action-item checklist,
+# then labels it `crew:ready` so a human can hand it to the build with `crew:build`.
+name: Crew triage
+
+on:
+  issues:
+    types: [opened, reopened]
+
+concurrency:
+  group: crew-triage-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    if: "!contains(github.event.issue.title, '[skip-crew]')"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: https://github.com/mohamedabubasith/basivo-plugins.git
+          plugins: basivo-crew@basivo
+          claude_args: --max-turns 20
+          prompt: |
+            Triage issue #${{ github.event.issue.number }} in ${{ github.repository }}.
+
+            Title: ${{ github.event.issue.title }}
+
+            Delegate to the `basivo-crew:triage` subagent. Post its block as a comment on the
+            issue, unchanged.
+
+            Then apply exactly one label with `gh issue edit`:
+            - `crew:ready` if its Type is bug, feature, chore or docs
+            - `crew:needs-info` if its Type is unclear
+
+            Post nothing beyond that one comment. Never apply `crew:build` yourself — a
+            human adds that label to authorise the work.
