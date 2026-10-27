@@ -45,6 +45,9 @@ jobs:
 
             Title: ${{ github.event.issue.title }}
 
+            Read `.basivo-crew.yml` first if it exists: `off_limits` paths are not yours to
+            edit even if the issue asks, and `checks` names the commands to run.
+
             Run the Basic crew, in order:
 
             1. Delegate to the `basivo-crew:developer` subagent. Give it the issue title and
@@ -53,9 +56,15 @@ jobs:
             2. Delegate to the `basivo-crew:reviewer` subagent to review the resulting diff.
                If it returns blocking findings, hand them back to `basivo-crew:developer` and
                repeat — at most twice.
-            3. Commit to a new branch and open a pull request whose body has: what changed and
-               why, the check results from the developer, the reviewer's verdict, and
-               `Closes #${{ github.event.issue.number }}`.
+            3. Commit to a new branch and open a pull request whose body has, in this order:
+               - what changed and why, in two or three lines
+               - the check results from the developer, as commands and outcomes
+               - the reviewer's verdict
+               - **Not done / unverified** — anything you skipped, assumed, could not run, or
+                 are unsure about. Never leave this section out: an automated pull request
+                 looks more finished than it is, and this is the section that makes it
+                 honest. Write "nothing" only if that is true.
+               - `Closes #${{ github.event.issue.number }}`
 
             If the developer's checks still fail after two rounds, open the pull request
             anyway, mark it a draft, and say plainly at the top of the body what is failing

@@ -1,7 +1,7 @@
 {
   "name": "basivo-crew",
   "displayName": "Basivo Crew",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Turn issues into reviewed pull requests. A crew of agents — triage, architect, developer, tester, reviewer, security — that runs in your CI on every trigger, in two tiers.",
   "author": {
     "name": "Mohamed Abu Basith",

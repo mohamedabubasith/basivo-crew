@@ -39,10 +39,17 @@ jobs:
 
             Title: ${{ github.event.issue.title }}
 
+            Read `.basivo-crew.yml` first if it exists: `off_limits` paths are not yours to
+            edit even if the issue asks, and `checks` names the commands to run.
+
             Run the Pro crew, in order, passing each agent's output to the next:
 
             1. `basivo-crew:triage` — unless a triage comment already exists on the issue, in
-               which case use that one and skip this step.
+               which case use that one and skip this step. Carry its **acceptance criteria**
+               through to every agent after it; they are what "done" means here. If triage
+               returns Type `unclear`, stop: post its questions on the issue, apply
+               `crew:needs-info`, and do not write code against a work order nobody can
+               check.
             2. `basivo-crew:architect` — the approach, from those action items.
             3. `basivo-crew:developer` — implement that approach and run this project's own
                lint, build and test commands.
@@ -52,9 +59,18 @@ jobs:
             If the tester returns FAIL or the reviewer returns blocking findings, hand them
             back to `basivo-crew:developer` and repeat steps 3 to 5. At most two rounds.
 
-            Then commit to a new branch and open a pull request whose body has: the approach
-            in two lines, what changed, the tester's verdict with the tests added, the
-            reviewer's verdict, and `Closes #${{ github.event.issue.number }}`.
+            Then commit to a new branch and open a pull request whose body has, in this order:
+            - the approach in two lines
+            - the acceptance criteria as a checklist, each ticked only if you can point to
+              the test or behaviour that proves it
+            - what changed
+            - the tester's verdict and the tests it added
+            - the reviewer's verdict
+            - **Not done / unverified** — anything skipped, assumed, unrunnable or uncertain.
+              Never leave this section out: an automated pull request looks more finished
+              than it is, and this is the section that makes it honest. Write "nothing" only
+              if that is true.
+            - `Closes #${{ github.event.issue.number }}`
 
             If the suite is still red after two rounds, open the pull request as a draft and
             say plainly at the top of the body what is failing and what you tried. Never

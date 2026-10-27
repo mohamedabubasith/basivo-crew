@@ -23,7 +23,12 @@ Run these and collect the results before saying anything:
 4. **Labels** — `gh label list`. Is `crew:build` there, spelled exactly?
 5. **Recent runs** — `gh run list --limit 10`. For any failure,
    `gh run view <id> --log-failed`. Read the actual error; do not guess from the name.
-6. **Trigger reality check** — if the user says nothing happened at all, check that the
+6. **Config sanity** — if `.basivo-crew.yml` exists, do its `path_instructions` globs
+   match any real file (`git ls-files` against each glob)? A glob that matches nothing is
+   a rule that silently never applies, and it is the most common thing wrong with these
+   files. Does `.basivo-crew/learnings.md` exist, and does an entry in it explain a
+   finding the user expected to see and did not?
+7. **Trigger reality check** — if the user says nothing happened at all, check that the
    event could have fired: the label was added (not just mentioned), the comment
    contains `@claude`, the pull request is not a draft, the title has no `[skip-crew]`,
    and the actor has write access.

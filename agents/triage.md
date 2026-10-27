@@ -22,6 +22,10 @@ your turn with one — decide, and record what you assumed.
 3. Read `CLAUDE.md`, `AGENTS.md` and `CONTRIBUTING.md` if they exist. Constraints they
    impose on the fix belong in your output.
 4. Classify: `bug`, `feature`, `chore`, `docs`, or `unclear`.
+5. Write the acceptance criteria — the statements a reviewer can check off to decide
+   this is actually done. These are the most valuable thing you produce: a vague work
+   order is the single biggest cause of a wasted build, and every agent after you is
+   measured against them.
 
 ## Output
 
@@ -44,12 +48,18 @@ Post exactly this shape, nothing before or after it:
 ### Assumptions
 - <every gap you filled in yourself>
 
+### Acceptance criteria
+- <observable, checkable statement that is false today and true when this is done>
+- <...>
+
 ### Verification
 - <the command or steps that prove it is fixed>
 ```
 
 ## Rules
 
+- Two to five acceptance criteria, each observable. "Works correctly" is not one;
+  "`GET /users/:id` returns 404, not 500, for an unknown id" is.
 - Between three and seven action items. More than that means the issue is really several
   issues: say so in the restatement and triage only the first.
 - An action item is one change in one place. "Refactor the auth module" is not an action

@@ -69,6 +69,56 @@ pull request opened ───────┘
          └─ developer + tester .. pushed to the same branch
 ```
 
+## Why it stays quiet
+
+The failure mode of every AI reviewer is noise: in a 50-PR independent comparison the
+highest-catch-rate tool also posted five times the false positives of the quietest one,
+and a reviewer people learn to scroll past is worth nothing. Four mechanisms, borrowed
+from the tools that measurably do this well:
+
+**Findings are scored, then cut.** The reviewer and the security agent generate findings,
+then score every candidate 0–10 in a separate pass, judging them side by side. A 0 means
+it was wrong and the finding is deleted; anything under the threshold is dropped. Ranking
+and generating in one pass is what makes models pad a review. The dial is `profile` in
+`.basivo-crew.yml`: `chill`, `standard`, `assertive`.
+
+**The whole enclosing function, not the hunk.** A unified diff gives three lines of
+context, which is how most review mistakes happen. Each agent reads the enclosing
+function or class around every hunk — bounded there, so it does not read a whole file for
+a one-line change.
+
+**It does not repeat itself.** On a re-push the review covers only the commits since the
+last one. And when a maintainer dismisses a finding — "false positive", "intentional" —
+the follow-up workflow appends it to `.basivo-crew/learnings.md`, which every later
+review reads and honours. That file is the only state the crew keeps, and it is what
+stops the weekly nag.
+
+**Pre-existing is not blocking.** A defect the diff did not introduce gets reported and
+labelled, never blocks the author.
+
+Two more, on the build side: triage emits **acceptance criteria** and the build stops
+outright on an unclear issue, because a vague work order is the biggest cause of a wasted
+run; and every pull request body carries a **Not done / unverified** section, because an
+automated pull request looks more finished than it is.
+
+## Configure it
+
+`.basivo-crew.yml` in the repo root, all of it optional:
+
+```yaml
+profile: standard          # chill | standard | assertive
+path_instructions:         # applied only when a matching file changes
+  - glob: "**/*.sql"
+    instruction: Migrations must be reversible and must not lock a large table.
+off_limits:                # no agent edits these, whatever the issue says
+  - ".github/workflows/**"
+checks:                    # instead of guessing from package.json
+  test: npm test
+```
+
+No parser, no schema — the agents read the file. `path_instructions` is where the rules a
+reviewer on your team would know and a stranger would not belong.
+
 ## Deliberate choices
 
 **The build is behind a label.** `crew:build` is a human saying yes. Anyone who can open

@@ -49,6 +49,14 @@ jobs:
             comment that triggered this run.
 
             1. Read the request and the existing diff. Work out exactly what is being asked.
+
+               If the comment is dismissing one of the crew's own findings — "false
+               positive", "that's intentional", "wontfix", "not a bug" — then that is the
+               whole task: append one entry to `.basivo-crew/learnings.md` in the format
+               that file describes, recording the finding, who dismissed it, this pull
+               request, and their reason. Create the file from the plugin's template if it
+               is missing. Commit it, reply in one line confirming the crew will not raise
+               it again, and stop. Do not argue, and do not change code.
             2. Delegate to `basivo-crew:developer` to make that change on this branch, and to
                run this project's lint, build and test commands.
             3. Delegate to `basivo-crew:tester` to re-run the suite and cover anything new.

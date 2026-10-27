@@ -37,17 +37,26 @@ jobs:
           prompt: |
             Review pull request #${{ github.event.pull_request.number }} in ${{ github.repository }}.
 
+            Event: ${{ github.event.action }}. If it is `synchronize`, this pull request has
+            already been reviewed: look at your previous sticky comment, diff only the commits
+            pushed since it, and report only what is new. Never re-post a finding the author
+            has already seen, and never re-post one they have since fixed.
+
+            If the pull request body closes an issue, read that issue first and pass its
+            acceptance criteria to both agents.
+
             Delegate to both, giving each the diff against the base branch:
             - `basivo-crew:reviewer` for correctness
             - `basivo-crew:security` for the trust boundaries the diff touches
 
             Post one review. Put the reviewer's blocking findings and the security findings
             as inline comments on their lines, and the two verdicts in the review body.
-            Drop a finding only if the other agent already reported the same defect on the
-            same line.
+            Keep their scores. Drop a finding only if the other agent already reported the
+            same defect on the same line.
 
-            Request changes only if there is at least one blocking or at least one
-            high-or-critical security finding. Otherwise comment, or approve in one line
-            when both come back clean.
+            Request changes only if there is at least one blocking finding or at least one
+            high-or-critical security finding. A finding either agent marked pre-existing
+            never requests changes. Otherwise comment, or approve in one line when both
+            come back clean.
 
             Post nothing else: no diff summary, no praise, no plan.

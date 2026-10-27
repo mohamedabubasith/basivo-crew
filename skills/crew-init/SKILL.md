@@ -50,7 +50,37 @@ Then adapt what you copied to this repository, and say what you changed:
 - If this is a monorepo, add a `paths:` filter to the review workflow so unrelated
   packages do not trigger a run.
 
-## 4. Create the labels
+## 4. Install the per-repo config
+
+Copy `${CLAUDE_PLUGIN_ROOT}/templates/.basivo-crew.yml` to the repo root and fill it in
+from what you can see in this repository — real globs for its real directories, real
+check commands from its `package.json` or `Makefile`, and `off_limits` for anything that
+should never be edited by an agent (CI config, infra, migrations, lockfiles). Delete the
+example entries that do not apply; a config full of irrelevant rules is worse than none.
+
+Copy `${CLAUDE_PLUGIN_ROOT}/templates/learnings/learnings.md` to
+`.basivo-crew/learnings.md`. That file is how the crew stops repeating a finding someone
+has already dismissed, and the follow-up workflow appends to it on its own.
+
+## 5. Write down how to build this project
+
+This is the highest-leverage thing in the whole setup, and the step people skip. Every
+agent reads `CLAUDE.md` or `AGENTS.md`, and the quality of what the crew produces tracks
+the quality of that file more than anything else here.
+
+Check whether one exists. If it does, read it and add only what is missing. If it does
+not, create `AGENTS.md` and keep it short — a page, not an essay:
+
+- the install command, and anything non-obvious about it
+- lint, typecheck, test and build commands, exactly as a contributor runs them
+- how to run one test, not the whole suite
+- the conventions a newcomer gets wrong in this repo
+- what not to touch, and why
+
+Show the user what you wrote and let them correct it. They know things about their own
+project that are not in the tree.
+
+## 6. Create the labels
 
 ```bash
 gh label create crew:build      --color 6d4aff --description "Hand this issue to the crew" --force
@@ -60,7 +90,7 @@ gh label create crew:needs-info --color fbbf24 --description "Triage needs more 
 
 `crew:ready` and `crew:needs-info` are Pro-only; skip them on Basic.
 
-## 5. Print the checklist
+## 7. Print the checklist
 
 The user has to do these — you cannot. Print exactly this, filled in for their repo:
 
@@ -87,7 +117,12 @@ Then tell them two things they will otherwise learn the hard way:
 - Anyone who can open an issue can spend tokens if they remove the label gate. The
   `crew:build` label is the gate; keep it on a public repo.
 
-## 6. Commit
+## 8. Commit
 
-Commit the workflow files on a branch and show them the diff. Do not push to the default
-branch without asking.
+Commit the workflows, `.basivo-crew.yml`, `.basivo-crew/learnings.md` and any
+`AGENTS.md` change on a branch, and show them the diff. Do not push to the default branch
+without asking.
+
+Then say, in one line each, what they can tune later: `profile` in `.basivo-crew.yml` if
+the reviewer is too loud or too quiet, and `path_instructions` for the rules a reviewer
+on their team would know and a stranger would not.

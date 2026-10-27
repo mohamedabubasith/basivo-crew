@@ -37,8 +37,18 @@ jobs:
           prompt: |
             Review pull request #${{ github.event.pull_request.number }} in ${{ github.repository }}.
 
+            Event: ${{ github.event.action }}. If it is `synchronize`, this pull request has
+            already been reviewed: look at your previous sticky comment, diff only the commits
+            pushed since it, and report only what is new. Repeating a finding the author has
+            already seen is noise, and repeating one they pushed a fix for is worse.
+
+            If the pull request body closes an issue, read that issue first and pass its
+            acceptance criteria to the reviewer — a change that does not meet them is the
+            finding that matters most.
+
             Delegate to the `basivo-crew:reviewer` subagent, giving it the diff against the
-            base branch. Post its output as your review comment, unchanged in substance.
+            base branch. Post its output as your review comment, unchanged in substance,
+            including its score annotations.
 
             Post nothing else: no summary of the diff, no praise, no restating the plan.
             If the verdict is APPROVE with no non-blocking findings, say exactly that in

@@ -1,0 +1,42 @@
+# Basivo Crew — per-repository configuration.
+# Copy to the root of the repo the crew runs on. Every key is optional.
+# The agents read this file themselves; nothing parses it, so comments are fine
+# and an unknown key is simply ignored.
+
+# How much the reviewer says. Sets the default score threshold for findings.
+#   chill      — blocking findings and little else   (threshold 6)
+#   standard   — the default                          (threshold 4)
+#   assertive  — tell me everything                   (threshold 2)
+profile: standard
+
+# Override the threshold directly, 0–10. Findings scoring below it are dropped.
+# score_threshold: 5
+
+# Extra review instructions, applied only when a changed file matches the glob.
+# Use these for the rules a reviewer in your team would know and a stranger would not.
+path_instructions:
+  - glob: "src/**/*.ts"
+    instruction: |
+      Public exports are a contract — flag any change to an exported signature that
+      is not additive.
+  - glob: "**/*.sql"
+    instruction: |
+      Every migration must be reversible and must not lock a large table on write.
+  - glob: "**/*.test.ts"
+    instruction: |
+      Do not suggest more coverage here. Flag only tests that cannot fail.
+
+# Paths no agent may edit, whatever the task says. The developer treats a change
+# here as out of scope and reports it instead.
+off_limits:
+  - ".github/workflows/**"
+  - "infra/**"
+  - "**/*.lock"
+  - "**/migrations/**"
+
+# Commands the crew should run instead of guessing from package.json.
+# checks:
+#   install: npm ci
+#   lint: npm run lint
+#   test: npm test
+#   build: npm run build
