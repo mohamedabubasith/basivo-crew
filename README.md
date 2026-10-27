@@ -140,18 +140,18 @@ group so a comment storm cannot fan out, and `[skip-crew]` in a title to opt out
 
 ## The crew
 
-Six agents. Each signs what it posts, so you can tell who said what when several of them
+Six agents, named for stars. Each signs what it posts, so you can tell who said what when several of them
 land on one pull request. Each is also a subagent you can call by hand in your editor —
 `basivo-crew:reviewer`, `basivo-crew:triage`, and so on.
 
 | | Handle | Writes code | For |
 | :- | :- | :- | :- |
-| **Scout** | `triage` | no | issue → acceptance criteria and action items that name files |
-| **Compass** | `architect` | no | the approach, the blast radius, the pattern to follow |
-| **Forge** | `developer` | yes | the minimal diff, and the project's own checks, run for real |
-| **Proof** | `tester` | yes | the test that fails if the change regresses; the suite |
-| **Lens** | `reviewer` | no | scored defects with a traced failure path |
-| **Shield** | `security` | no | untrusted input to sink, authz, secrets, supply chain |
+| **Vega** | `triage` | no | issue → acceptance criteria and action items that name files |
+| **Lyra** | `architect` | no | the approach, the blast radius, the pattern to follow |
+| **Nova** | `developer` | yes | the minimal diff, and the project's own checks, run for real |
+| **Atlas** | `tester` | yes | the test that fails if the change regresses; the suite |
+| **Argus** | `reviewer` | no | scored defects with a traced failure path |
+| **Orion** | `security` | no | untrusted input to sink, authz, secrets, supply chain |
 
 The names are bylines, not personas — the handle you type stays the role, so nobody has
 to learn a mapping to use the plugin.
@@ -181,7 +181,7 @@ overstates the bill several times over. For the dollar amount, the workflows set
 `total_cost_usd`. The plugin ships no price table, because a stale one quotes you a wrong
 number without ever looking wrong.
 
-A Pro issue is roughly six agent runs plus however many rounds Proof and Lens send back.
+A Pro issue is roughly six agent runs plus however many rounds Atlas and Argus send back.
 Keep issues specific, keep `CLAUDE.md` short, and leave the label gate on.
 
 ## GitLab
