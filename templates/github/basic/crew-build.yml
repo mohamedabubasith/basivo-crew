@@ -38,6 +38,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           plugin_marketplaces: https://github.com/mohamedabubasith/basivo-plugins.git
           plugins: basivo-crew@basivo
+          display_report: true
           track_progress: true
           claude_args: --max-turns 40
           prompt: |
@@ -70,3 +71,13 @@ jobs:
             anyway, mark it a draft, and say plainly at the top of the body what is failing
             and what you tried. Do not weaken a check to get green, and do not report
             a check as passing unless you ran it.
+
+      - name: Per-agent token report
+        if: always()
+        run: |
+          SCRIPT=$(find "$HOME/.claude" -path '*basivo-crew*/scripts/crew-cost.py' 2>/dev/null | head -1)
+          if [ -n "$SCRIPT" ]; then
+            python3 "$SCRIPT" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "_Per-agent token report unavailable: the plugin's crew-cost.py was not found on the runner._" >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -156,11 +156,33 @@ land on one pull request. Each is also a subagent you can call by hand in your e
 The names are bylines, not personas — the handle you type stays the role, so nobody has
 to learn a mapping to use the plugin.
 
-## Cost
+## Cost, per agent
 
-You are paying for agent runs and runner minutes. A Pro issue is roughly six agent runs
-plus however many rounds the tester and reviewer send back. Keep issues specific, keep
-`CLAUDE.md` short, and leave the label gate on.
+Every workflow ends with a token report, written to the job summary whether the run
+passed or failed, so you can see which agent is expensive on your repo rather than
+guessing:
+
+```
+agent                  runs  msgs   input  output  cache r  cache w
+-------------------------------------------------------------------
+main session              —     3   2,200     460   11,000      800
+basivo-crew:developer     1     2  11,000   3,300   60,000    1,500
+basivo-crew:reviewer      1     1   5,000   1,100   30,000      600
+```
+
+It is read out of the session transcript, not asked of the model: an agent cannot see its
+own subagents' usage, so a self-reported figure would be invented. Locally, `/crew-cost`
+prints the same table for any session.
+
+Cache reads and cache writes are kept in their own columns deliberately — reads cost a
+fraction of input and writes a premium, so folding them into one "total tokens" figure
+overstates the bill several times over. For the dollar amount, the workflows set
+`display_report: true` and the Claude Code report in the job summary carries
+`total_cost_usd`. The plugin ships no price table, because a stale one quotes you a wrong
+number without ever looking wrong.
+
+A Pro issue is roughly six agent runs plus however many rounds Proof and Lens send back.
+Keep issues specific, keep `CLAUDE.md` short, and leave the label gate on.
 
 ## GitLab
 

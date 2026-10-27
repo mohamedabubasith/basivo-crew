@@ -30,6 +30,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           plugin_marketplaces: https://github.com/mohamedabubasith/basivo-plugins.git
           plugins: basivo-crew@basivo
+          display_report: true
           claude_args: --max-turns 20
           prompt: |
             Triage issue #${{ github.event.issue.number }} in ${{ github.repository }}.
@@ -45,3 +46,13 @@ jobs:
 
             Post nothing beyond that one comment. Never apply `crew:build` yourself — a
             human adds that label to authorise the work.
+
+      - name: Per-agent token report
+        if: always()
+        run: |
+          SCRIPT=$(find "$HOME/.claude" -path '*basivo-crew*/scripts/crew-cost.py' 2>/dev/null | head -1)
+          if [ -n "$SCRIPT" ]; then
+            python3 "$SCRIPT" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "_Per-agent token report unavailable: the plugin's crew-cost.py was not found on the runner._" >> "$GITHUB_STEP_SUMMARY"
+          fi
